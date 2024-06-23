@@ -259,8 +259,8 @@ def main(num_episodes):
             elif not rl_starts:
                 action = generate_expert_move(env, minimax)  # Expert move
                 print(f"Minimax move:")
-                print(env.board)
                 env.make_move(1, action)
+                print(env.board)
                 next_state = env.get_state()
                 reward = 1 if env.winner == 1 else -1 if env.winner == -1 else 0
                 done = env.done
@@ -304,7 +304,7 @@ def main(num_episodes):
 
 if __name__ == "__main__":
     dqfd = DQfD(state_dim=9, action_dim=9)  # Create an instance of DQfD
-    main(1000000)
+    main(10)
 
     # Save the trained model
     model_path = "dqn_tictactoe_model.pth"
