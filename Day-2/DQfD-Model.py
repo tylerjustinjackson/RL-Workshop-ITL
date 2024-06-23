@@ -207,11 +207,10 @@ def generate_expert_move(env, minimax):
 
 
 # Main function
-def main():
+def main(num_episodes):
     env = TicTacToe()
     dqfd = DQfD(state_dim=9, action_dim=9)
 
-    num_episodes = 1000
     for e in range(num_episodes):
         state = env.reset()
         done = False
@@ -298,4 +297,10 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    dqfd = DQfD(state_dim=9, action_dim=9)  # Create an instance of DQfD
+    main(2)
+
+    # Save the trained model
+    model_path = "dqn_tictactoe_model.pth"
+    dqfd.save_model(model_path)
+    print(f"Saved DQN model to {model_path}")
