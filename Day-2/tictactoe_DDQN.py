@@ -1,11 +1,10 @@
 import numpy as np
-import random, pickle, time
-import tensorflow as tf
-from tensorflow import keras
-from keras import layers
+import random
+import time
+import torch
+import torch.nn as nn
+import torch.optim as optim
 import tkinter as tk
-
-print("here")
 
 
 class TicTacToe:
@@ -52,7 +51,7 @@ class TicTacToe:
         return self.check_winner(player)
 
 
-class DDQNAgent:
+class DDQNAgent(nn.Module):
     def __init__(
         self,
         state_size,
@@ -63,6 +62,7 @@ class DDQNAgent:
         epsilon_min=0.01,
         epsilon_decay=0.995,
     ):
+        super(DDQNAgent, self).__init__()
         self.state_size = state_size
         self.action_size = action_size
         self.memory = []
@@ -74,26 +74,36 @@ class DDQNAgent:
         self.model = self._build_model()
         self.target_model = self._build_model()
         self.update_target_model()
+        self.optimizer = optim.Adam(self.model.parameters(), lr=self.alpha)
 
     def _build_model(self):
-        model = keras.Sequential()
-        model.add(layers.Dense(24, input_dim=self.state_size, activation="relu"))
-        model.add(layers.Dense(24, activation="relu"))
-        model.add(layers.Dense(self.action_size, activation="linear"))
-        model.compile(loss="mse", optimizer=keras.optimizers.Adam(lr=self.alpha))
+        model = nn.Sequential(
+            nn.Linear(self.state_size, 24),
+            nn.ReLU(),
+            nn.Linear(24, 24),
+            nn.ReLU(),
+            nn.Linear(24, self.action_size),
+        )
         return model
 
     def update_target_model(self):
-        self.target_model.set_weights(self.model.get_weights())
+        self.target_model.load_state_dict(self.model.state_dict())
 
     def remember(self, state, action, reward, next_state, done):
         self.memory.append((state, action, reward, next_state, done))
 
     def act(self, state):
+        state = np.array(state).flatten()
         if np.random.rand() <= self.epsilon:
             return random.choice(self.get_available_actions(state))
-        act_values = self.model.predict(state)
-        return self.get_available_actions(state)[np.argmax(act_values[0])]
+        with torch.no_grad():
+            state = torch.tensor(state, dtype=torch.float32)
+            act_values = self.model(state).numpy()
+        available_actions = self.get_available_actions(state)
+        action_index = np.argmax(
+            [act_values[action[0] * 3 + action[1]] for action in available_actions]
+        )
+        return available_actions[action_index]
 
     def get_available_actions(self, state):
         board = np.array(state).reshape((3, 3))
@@ -102,21 +112,32 @@ class DDQNAgent:
     def replay(self, batch_size):
         minibatch = random.sample(self.memory, batch_size)
         for state, action, reward, next_state, done in minibatch:
-            target = self.model.predict(state)
+            state = torch.tensor(state, dtype=torch.float32).flatten()
+            next_state = torch.tensor(next_state, dtype=torch.float32).flatten()
+            target = self.model(state).detach().clone()
+            action_index = (
+                action[0] * 3 + action[1]
+            )  # Convert (i, j) action to a single index
+
             if done:
-                target[0][action] = reward
+                target[action_index] = reward
             else:
-                t = self.target_model.predict(next_state)[0]
-                target[0][action] = reward + self.gamma * np.amax(t)
-            self.model.fit(state, target, epochs=1, verbose=0)
+                t = self.target_model(next_state).detach()
+                target[action_index] = reward + self.gamma * torch.max(t)
+
+            self.optimizer.zero_grad()
+            loss = nn.MSELoss()(self.model(state), target)
+            loss.backward()
+            self.optimizer.step()
+
         if self.epsilon > self.epsilon_min:
             self.epsilon *= self.epsilon_decay
 
     def load(self, name):
-        self.model.load_weights(name)
+        self.model.load_state_dict(torch.load(name))
 
     def save(self, name):
-        self.model.save_weights(name)
+        torch.save(self.model.state_dict(), name)
 
 
 def train_agent(agent, env, episodes, batch_size):
@@ -143,7 +164,7 @@ def train_agent(agent, env, episodes, batch_size):
             reward = 1 if env.winner == 1 else -2 if env.winner == -1 else 0
             next_state = env.get_state()
             next_state = np.reshape(next_state, [1, 9])
-            agent.remember(state, action, reward, next_state, env.done)
+            agent.remember(state, random_action, reward, next_state, env.done)
             state = next_state
         if len(agent.memory) > batch_size:
             agent.replay(batch_size)
@@ -252,10 +273,8 @@ if __name__ == "__main__":
     agent = DDQNAgent(state_size, action_size)
 
     # Train the agent
-
     start_time = time.time()
-    print("i am here")
-    train_agent(agent, env, episodes=1000, batch_size=32)
+    train_agent(agent, env, episodes=100000, batch_size=32)
 
     elapsed_time_seconds = time.time() - start_time
     days = elapsed_time_seconds // (24 * 3600)
@@ -272,10 +291,10 @@ if __name__ == "__main__":
     )
 
     # Save the trained model
-    agent.save("ddqn_tictactoe.h5")
+    agent.save("ddqn_tictactoe.pth")
 
     # Load the trained model
-    agent.load("ddqn_tictactoe.h5")
+    agent.load("ddqn_tictactoe.pth")
 
     # Start the GUI game
     game = TicTacToeGUI(agent, env)
