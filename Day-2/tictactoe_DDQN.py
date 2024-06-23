@@ -57,10 +57,10 @@ class DDQNAgent(nn.Module):
         state_size,
         action_size,
         alpha=0.001,
-        gamma=0.99,
+        gamma=0.999,
         epsilon=1.0,
         epsilon_min=0.01,
-        epsilon_decay=0.99999,
+        epsilon_decay=0.999999999,
     ):
         super(DDQNAgent, self).__init__()
         self.state_size = state_size
@@ -274,7 +274,7 @@ if __name__ == "__main__":
 
     # Train the agent
     start_time = time.time()
-    train_agent(agent, env, episodes=10000, batch_size=32)
+    train_agent(agent, env, episodes=1000, batch_size=128)
 
     elapsed_time_seconds = time.time() - start_time
     days = elapsed_time_seconds // (24 * 3600)
