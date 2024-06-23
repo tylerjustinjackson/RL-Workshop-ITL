@@ -130,7 +130,7 @@ class DQfD:
         action_dim,
         gamma=0.99,
         lr=0.001,
-        batch_size=64,
+        batch_size=32,
         buffer_size=10000,
     ):
         self.state_dim = state_dim
@@ -298,7 +298,7 @@ def main(num_episodes):
 
 if __name__ == "__main__":
     dqfd = DQfD(state_dim=9, action_dim=9)  # Create an instance of DQfD
-    main(2)
+    main(1000000)
 
     # Save the trained model
     model_path = "dqn_tictactoe_model.pth"
