@@ -4,6 +4,7 @@ import torch.optim as optim
 import numpy as np
 import random
 from collections import deque
+from time import time
 
 
 # Define the TicTacToe environment
@@ -212,7 +213,9 @@ def main(num_episodes):
     dqfd = DQfD(state_dim=9, action_dim=9)
 
     for e in range(num_episodes):
+        start_for_env = time()
         state = env.reset()
+        print(f"end for env reset: {time() - start_for_env}")
         done = False
 
         # Randomly determine who starts first
@@ -220,6 +223,7 @@ def main(num_episodes):
         print(f"Episode {e+1} - RL {'first' if rl_starts else 'second'}")
 
         while not done:
+            start_for_alg = time()
             if rl_starts:
                 action = dqfd.act(state.flatten())
                 print(f"RL move:")
@@ -290,6 +294,8 @@ def main(num_episodes):
         print(
             f"Winner is {'Player 1' if env.winner == 1 else 'Player -1' if env.winner == -1 else 'Draw'}"
         )
+
+        print(f"time elapsed for {e}/{num_episodes}: {time() - start_for_alg}")
 
         dqfd.replay()
         if e % 10 == 0:
