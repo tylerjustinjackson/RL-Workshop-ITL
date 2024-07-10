@@ -16,7 +16,10 @@ class QLearningAgent:
 
     def update_q_value(self, state, action, reward, next_state):
         next_max = max(
-            [ self.get_q_value(next_state, a) for a in self.get_available_actions(next_state)],
+            [
+                self.get_q_value(next_state, a)
+                for a in self.get_available_actions(next_state)
+            ],
             default=0,
         )
         current_q = self.q_table.get((state, action), 0.0)
@@ -61,7 +64,7 @@ def train_agent(agent, env, episodes):
         reward = 1 if env.winner == 1 else -2 if env.winner == -1 else 0
         for state, action, player in reversed(episode):
             if player == -1 and env.is_blocking_move(action, 1):
-                reward = ( -1 )  
+                reward = -1
                 # Small negative reward for blocking opponent's winning move
             agent.update_q_value(
                 state, action, reward if player == 1 else -reward, state
@@ -89,7 +92,7 @@ if __name__ == "__main__":
     agent = QLearningAgent()
 
     # Uncomment these lines if you need to train and save the Q-table
-    train_agent(agent, env, 1000000)
+    # train_agent(agent, env, 1000000)
     save_q_table(agent, "q_table.pkl")
 
     # Load the Q-table for playing

@@ -48,8 +48,6 @@ class TicTacToe:
         temp_board = self.board.copy()
         temp_board[action] = player
         return self.check_winner(player)
-    
-
 
 
 class TicTacToeGUI:
