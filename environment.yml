@@ -8,3 +8,4 @@ dependencies:
   - pytorch
   - pip:
     - torch  # PyTorch should be installed via pip, but you can use conda if needed
+    - numpy
