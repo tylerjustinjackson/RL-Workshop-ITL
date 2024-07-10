@@ -1,0 +1,10 @@
+name: my_environment
+channels:
+  - defaults
+dependencies:
+  - python=3.8  # Specify the Python version you want to use
+  - numpy
+  - tkinter
+  - pytorch
+  - pip:
+    - torch  # PyTorch should be installed via pip, but you can use conda if needed
