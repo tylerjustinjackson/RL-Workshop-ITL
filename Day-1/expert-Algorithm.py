@@ -4,6 +4,7 @@ import platform
 import time
 from os import system
 
+
 HUMAN = -1
 COMP = +1
 board = [
