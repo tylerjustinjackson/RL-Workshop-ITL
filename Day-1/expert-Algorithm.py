@@ -1,6 +1,6 @@
 # imports
 import numpy as np  # we will use this to manipulate the TTT board
-from TTT import TicTacToe, TicTacToeGUI  # imports game mechanics and GUI
+from tictactoe_mechanics import TicTacToe, TicTacToeGUI  # imports game mechanics and GUI
 
 
 class MinimaxAgent:

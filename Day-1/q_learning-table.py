@@ -1,7 +1,7 @@
 # imports
 import numpy as np
 import random, pickle
-from TTT import TicTacToe, TicTacToeGUI
+from tictactoe_mechanics import TicTacToe, TicTacToeGUI
 
 
 # defined a class for agent that will learn to play TTT
