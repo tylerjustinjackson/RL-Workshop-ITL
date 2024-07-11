@@ -16,7 +16,7 @@ class DDQNAgent(nn.Module):
         gamma=0.999,
         epsilon=1.0,
         epsilon_min=0.01,
-        epsilon_decay=0.999999999,
+        epsilon_decay=0.9999995,
     ):
         super(DDQNAgent, self).__init__()
         self.state_size = state_size
@@ -143,7 +143,7 @@ if __name__ == "__main__":
     agent = DDQNAgent(state_size, action_size)
 
     # Train the agent
-    train_agent(agent, env, episodes=50000000, batch_size=128)
+    train_agent(agent, env, episodes=25000000, batch_size=128)
 
     # Save the trained model
     agent.save("ddqn_tictactoe.pth")

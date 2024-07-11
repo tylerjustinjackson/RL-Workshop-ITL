@@ -112,7 +112,7 @@ def train_model(env, agent, episodes, batch_size):
             state = next_state
             if done:
                 agent.update_target_model()
-                print(f"Episode {e + 1}/{episodes}, Epsilon: {agent.epsilon:.2f}")
+                print(f"Episode {e + 1}/{episodes}")
                 break
             agent.replay(batch_size)
         agent.update_epsilon()  # Ensure epsilon is updated after each episode
