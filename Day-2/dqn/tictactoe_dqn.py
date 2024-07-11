@@ -125,7 +125,7 @@ if __name__ == "__main__":
     env = TicTacToe()
     agent = DQNAgent()
 
-    episodes = 10  # Reduced for testing
+    episodes = 100000000  # Reduced for testing
     batch_size = 64
 
     agent = train_model(env, agent, episodes, batch_size)

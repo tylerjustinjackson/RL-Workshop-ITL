@@ -131,6 +131,11 @@ def train_agent(agent, env, episodes, batch_size):
     print("Total RL Player Wins during training:", rl_player_wins)
 
 
+def use_gpu():
+    # Check if CUDA (GPU) is available
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
 if __name__ == "__main__":
     env = TicTacToe()
     state_size = 9
@@ -138,22 +143,7 @@ if __name__ == "__main__":
     agent = DDQNAgent(state_size, action_size)
 
     # Train the agent
-    start_time = time.time()
-    train_agent(agent, env, episodes=10000000, batch_size=128)
-
-    elapsed_time_seconds = time.time() - start_time
-    days = elapsed_time_seconds // (24 * 3600)
-    elapsed_time_seconds %= 24 * 3600
-    hours = elapsed_time_seconds // 3600
-    elapsed_time_seconds %= 3600
-    minutes = elapsed_time_seconds // 60
-    seconds = elapsed_time_seconds % 60
-
-    print(
-        (
-            f"Elapsed time: {int(days)} days, {int(hours)} hours, {int(minutes)} minutes, {seconds:.2f} seconds\n"
-        )
-    )
+    train_agent(agent, env, episodes=50000000, batch_size=128)
 
     # Save the trained model
     agent.save("ddqn_tictactoe.pth")
