@@ -136,18 +136,3 @@ class TicTacToe:
         temp_board = self.board.copy()
         temp_board[action] = player
         return self.check_winner(player)
-
-
-# Define the neural network for Q-learning
-class DQN(nn.Module):
-    def __init__(self):
-        super(DQN, self).__init__()
-        self.fc1 = nn.Linear(9, 128)
-        self.fc2 = nn.Linear(128, 128)
-        self.fc3 = nn.Linear(128, 9)
-
-    def forward(self, x):
-        x = torch.relu(self.fc1(x))
-        x = torch.relu(self.fc2(x))
-        x = self.fc3(x)
-        return x
