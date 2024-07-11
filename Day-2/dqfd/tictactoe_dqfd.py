@@ -183,16 +183,7 @@ def generate_expert_move(env):
     return action
 
 
-# Main function
-if __name__ == "__main__":
-    env = TicTacToe()
-    state_dim = 9
-    action_dim = 9
-
-    agent = DQfD(state_dim, action_dim)
-
-    # Generate expert data
-    num_expert_games = 10  # Reduce the number of expert games for faster execution
+def run_model(num_expert_games, num_episodes):
     for e in range(num_expert_games):
 
         print(e)
@@ -218,7 +209,7 @@ if __name__ == "__main__":
             env.make_move(1, action)
 
     # Train the agent with the expert data
-    num_episodes = 10  # Reduce the number of episodes for faster execution
+    # Reduce the number of episodes for faster execution
     for _ in range(num_episodes):
         state = env.reset()
         while not env.done:
@@ -232,6 +223,20 @@ if __name__ == "__main__":
             agent.remember(state.flatten(), action, reward, next_state.flatten(), done)
             state = next_state
             agent.replay()
+
+
+# Main function
+if __name__ == "__main__":
+    env = TicTacToe()
+    state_dim = 9
+    action_dim = 9
+
+    agent = DQfD(state_dim, action_dim)
+
+    # Generate expert data
+    num_expert_games = 10  # Reduce the number of expert games for faster execution
+    num_episodes = 100000
+    run_model(num_expert_games, num_episodes)
 
     DQfD.save_model("dqfd_model.pth")
 
